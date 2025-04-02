@@ -1,0 +1,667 @@
+{% load static %}
+<!DOCTYPE html>
+<!-- Set lang attribute dynamically via JS -->
+<html lang="pa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Missing Person - ReuniteHope</title>
+
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Your Custom CSS (Includes styles from home page + form specific) -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <!-- Favicon (Optional but Recommended) -->
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+
+    <style>
+        /* Add form-specific styles here or integrate into style.css */
+        body.form-page-background {
+             background-color: #f8f9fc; /* Slightly different light background */
+        }
+
+        .form-container {
+            background: white;
+            padding: 2.5rem; /* More padding */
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* Softer shadow */
+            margin-top: 100px; /* Space below fixed navbar */
+            margin-bottom: 50px;
+        }
+
+        .form-title {
+            color: var(--heading-color);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 500; /* Slightly lighter than heading */
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+            display: block; /* Ensure it takes full width */
+        }
+
+        /* Style inputs and selects to match theme */
+        .form-control, .form-select {
+            border-radius: var(--border-radius, 0.375rem);
+            border: 1px solid #ced4da;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            padding: 0.75rem 1rem; /* Comfortable padding */
+            height: auto; /* Override fixed height if needed */
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #86b7fe; /* Bootstrap focus color */
+            box-shadow: 0 0 0 0.25rem rgba(var(--primary-rgb), 0.25); /* Use primary color */
+        }
+
+        /* Input group styling for mic */
+        .input-group .form-control {
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+        }
+        .speech-mic-button {
+            border: 1px solid #ced4da;
+            border-left: 0;
+            background-color: #e9ecef; /* Light grey background */
+            color: var(--secondary-color);
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            border-top-right-radius: var(--border-radius, 0.375rem) !important;
+            border-bottom-right-radius: var(--border-radius, 0.375rem) !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .speech-mic-button:hover {
+            background-color: #dde1e4;
+        }
+        .speech-mic-button.recording {
+            background-color: #dc3545; /* Red background for recording */
+            color: white;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
+
+
+        /* Image Preview */
+        .preview-img {
+            width: 100%;
+            max-width: 250px; /* Slightly larger preview */
+            height: auto;
+            margin-top: 15px;
+            display: none;
+            border: 1px solid #dee2e6;
+            border-radius: var(--border-radius, 0.375rem);
+            padding: 5px;
+            background-color: #f8f9fa;
+        }
+
+        /* Audio Recording Section */
+        #additional-info-audio-preview {
+            margin-top: 10px;
+            display: none;
+            width: 100%;
+        }
+        #record-audio-button i {
+            transition: color 0.2s ease;
+        }
+        #record-audio-button.recording i {
+            color: #dc3545; /* Red icon when recording */
+        }
+
+        /* Location Section */
+        #location-status {
+            font-size: 0.9em;
+            margin-top: 0.5rem;
+        }
+        .location-group .btn {
+            margin-right: 10px;
+        }
+
+        /* Spacing */
+        .form-section {
+             margin-bottom: 1.75rem; /* Increase spacing between sections */
+        }
+
+    </style>
+</head>
+<body class="form-page-background">
+
+    <!-- Consistent Navbar -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark fixed-top navbar-scrolled" id="mainNav"> {# Assuming form page always has scrolled navbar style #}
+            <div class="container">
+                <a class="navbar-brand fw-bold d-flex align-items-center" href="{% url 'home' %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-person-hearts me-2 brand-icon" viewBox="0 0 16 16">
+                       <path fill-rule="evenodd" d="M11.5 1.246a.5.5 0 0 1 .5.5v1.112a2.5 2.5 0 1 1-1.67-.934l.3-.531a.5.5 0 1 1 .87.498l-.3.533a2.48 2.48 0 0 1-.011.011Zm.393 2.272a3.48 3.48 0 0 0-.012-.011l-.3-.532a1.5 1.5 0 1 0-.87-.498l.3.531a1.5 1.5 0 0 0 1.67.934ZM8 5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Zm.001-6.44a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0ZM8 6.25a.75.75 0 0 0-1.5 0v2.5H4.25a.75.75 0 0 0 0 1.5H6.5v2.25a.75.75 0 0 0 1.5 0V10.25h2.25a.75.75 0 0 0 0-1.5H8V6.25Z"/>
+                       <path d="M6 13c0 1.105-1.12 2-2.5 2S1 14.105 1 13c0-1.104 1.12-2 2.5-2s2.5.896 2.5 2Zm8-5a.5.5 0 0 1 .5.5v1.765l.142-.047a1.5 1.5 0 0 1 1.636 1.636l-.047.142V13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1.765l-.142.047a1.5 1.5 0 0 1-1.636-1.636l.047-.142V8.5a.5.5 0 0 1 .5-.5h2Z"/>
+                    </svg>
+                    <span>ReuniteHope</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                     <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                        {# Add 'active' class based on current URL #}
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'upload_view' %}">Report Missing</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'feed' %}">View Feed</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                <div class="form-container">
+                    <h2 class="text-center form-title" data-translate="reportMissingPersonTitle">ਗੁੰਮ ਹੋਏ ਵਿਅਕਤੀ ਦੀ ਰਿਪੋਰਟ ਕਰੋ</h2>
+
+                    <div class="form-section">
+                        <label for="speech-lang" class="form-label" data-translate="recognitionLanguage">ਰਿਕੋਗਨੀਸ਼ਨ ਭਾਸ਼ਾ:</label>
+                        <select id="speech-lang" class="form-select">
+                            <option value="pa-IN" selected>ਪੰਜਾਬੀ (ਭਾਰਤ)</option>
+                            <option value="en-US">English (US)</option>
+                            <option value="en-GB">English (UK)</option>
+                            <option value="hi-IN">हिन्दी (भारत)</option>
+                            <option value="es-ES">Español (España)</option>
+                            <option value="fr-FR">Français (France)</option>
+                        </select>
+                    </div>
+
+                    <form method="POST" enctype="multipart/form-data" id="report-form">
+                        {% csrf_token %}
+
+                        <div class="form-section">
+                            <label for="name-input" class="form-label" data-translate="name">ਨਾਮ:</label>
+                            <div class="input-group">
+                                <input type="text" id="name-input" name="name" class="form-control" required>
+                                <button type="button" class="speech-mic-button" data-target="name-input" title="Speak Name">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <label for="age-input" class="form-label" data-translate="age">ਉਮਰ:</label>
+                            <div class="input-group">
+                                <input type="number" id="age-input" name="age" class="form-control" required min="0">
+                                 <button type="button" class="speech-mic-button" data-target="age-input" title="Speak Age">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <label for="location-input" class="form-label" data-translate="lastSeenLocation">ਆਖਰੀ ਵਾਰ ਦੇਖਿਆ ਗਿਆ ਸਥਾਨ:</label>
+                             <div class="input-group">
+                                <input type="text" id="location-input" name="last_seen_location" class="form-control" required>
+                                <button type="button" class="speech-mic-button" data-target="location-input" title="Speak Location">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-section location-group">
+                             <label class="form-label">Current Location (Optional):</label>
+                             <div>
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="getLocation()">
+                                    <i class="fas fa-map-marker-alt me-1"></i> Share Live Location
+                                </button>
+                                <input type="hidden" id="latitude" name="latitude">
+                                <input type="hidden" id="longitude" name="longitude">
+                                <span id="location-status" class="text-muted"></span>
+                             </div>
+                        </div>
+
+                        <div class="form-section">
+                            <label for="email-input" class="form-label" data-translate="emailAddress">Your Email Address (for updates):</label>
+                             <div class="input-group">
+                                <input type="email" id="email-input" name="parent_email" class="form-control" required>
+                                 <button type="button" class="speech-mic-button" data-target="email-input" title="Speak Email">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                             </div>
+                        </div>
+
+                        <div class="form-section">
+                            <label for="phone-input" class="form-label" data-translate="phoneNumber">Your Phone Number (for updates):</label>
+                             <div class="input-group">
+                                <input type="tel" id="phone-input" name="parent_phone" class="form-control" required>
+                                <button type="button" class="speech-mic-button" data-target="phone-input" title="Speak Phone Number">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                             </div>
+                        </div>
+
+                        <div class="form-section">
+                            <label for="photo-upload" class="form-label" data-translate="uploadPhoto">Upload Photo of Missing Person:</label>
+                            <input type="file" id="photo-upload" name="photo" class="form-control" accept="image/*" onchange="previewImage(event)" required>
+                            <img id="preview" class="preview-img" alt="Image Preview">
+                        </div>
+
+                        <div class="form-section">
+                            <label for="additional-info-text" class="form-label" data-translate="additionalInformation">Additional Information (Record Audio):</label>
+                            <div class="input-group">
+                                <!-- Changed input to a span for displaying status/placeholder -->
+                                <span id="additional-info-display" class="form-control" style="color: #6c757d; background-color: #e9ecef;" data-translate-placeholder="additionalInformationPlaceholder">Record details (clothing, etc.)</span>
+                                <button type="button" class="btn btn-outline-secondary" id="record-audio-button" title="Record Additional Information">
+                                    <i class="fas fa-microphone"></i> <span class="record-status-text ms-1">Record</span>
+                                </button>
+                            </div>
+                            <audio id="additional-info-audio-preview" controls></audio>
+                            <!-- Keep hidden file input for submission -->
+                            <input type="file" id="additional-info-audio-file" name="additional_audio" style="display: none;" accept="audio/*">
+                        </div>
+
+                         <div id="speech-status" class="mt-3 mb-3 text-muted small" role="status" aria-live="polite"></div>
+
+                        <button type="submit" class="btn btn-primary w-100 btn-lg cta-button shadow-sm mt-3">
+                           <i class="fas fa-paper-plane me-2"></i> <span data-translate="submitReport">ਰਿਪੋਰਟ ਜਮ੍ਹਾਂ ਕਰੋ</span>
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Consistent Footer -->
+    <footer class="footer mt-auto py-4 bg-dark text-white-50">
+      <div class="container text-center">
+        <p class="mb-1">© {% now "Y" %} ReuniteHope Platform. All rights reserved.</p>
+        <small>
+            <a href="#" class="text-white-50">Privacy Policy</a> | <a href="#" class="text-white-50">Terms of Service</a>
+        </small>
+      </div>
+    </footer>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<script src="{% static 'js/script.js' %}"></script> {# Include base script for navbar effects if needed #}
+
+<script>
+// --- Image Preview ---
+function previewImage(event) {
+    const reader = new FileReader();
+    const output = document.getElementById('preview');
+    reader.onload = function() {
+        if (output) {
+            output.src = reader.result;
+            output.style.display = 'block';
+        }
+    };
+    if (event.target.files && event.target.files[0]) {
+        reader.readAsDataURL(event.target.files[0]);
+    } else {
+        if (output) {
+            output.src = '';
+            output.style.display = 'none';
+        }
+    }
+}
+
+// --- Geolocation ---
+const locationStatus = document.getElementById("location-status");
+const latitudeInput = document.getElementById("latitude");
+const longitudeInput = document.getElementById("longitude");
+
+function getLocation() {
+    if (navigator.geolocation) {
+        locationStatus.textContent = "Getting location...";
+        locationStatus.classList.remove('text-danger', 'text-success');
+        navigator.geolocation.getCurrentPosition(showPosition, showError, { timeout: 10000 }); // Added timeout
+    } else {
+        locationStatus.textContent = "Geolocation is not supported by this browser.";
+        locationStatus.classList.add('text-danger');
+    }
+}
+
+function showPosition(position) {
+    latitudeInput.value = position.coords.latitude;
+    longitudeInput.value = position.coords.longitude;
+    locationStatus.textContent = "Location captured!";
+    locationStatus.classList.add('text-success');
+}
+
+function showError(error) {
+    let errorMessage = "Error getting location: ";
+    switch(error.code) {
+        case error.PERMISSION_DENIED: errorMessage += "User denied the request."; break;
+        case error.POSITION_UNAVAILABLE: errorMessage += "Location information is unavailable."; break;
+        case error.TIMEOUT: errorMessage += "Request timed out."; break;
+        case error.UNKNOWN_ERROR: errorMessage += "An unknown error occurred."; break;
+    }
+    locationStatus.textContent = errorMessage;
+    locationStatus.classList.add('text-danger');
+}
+</script>
+
+<script>
+// --- Speech Recognition & Translation Script ---
+document.addEventListener('DOMContentLoaded', () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const micButtons = document.querySelectorAll('.speech-mic-button');
+    const statusDiv = document.getElementById('speech-status');
+    const langSelect = document.getElementById('speech-lang');
+    let recognition;
+    let targetInput = null;
+    let currentMicButton = null;
+
+    if (!SpeechRecognition) {
+        statusDiv.textContent = "Sorry, your browser does not support speech recognition.";
+        micButtons.forEach(button => button.style.display = 'none');
+        return;
+    }
+
+    function initializeRecognition() {
+        if (recognition) {
+             // Abort any ongoing recognition before re-initializing
+             try { recognition.abort(); } catch(e) {}
+        }
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.lang = langSelect.value || 'pa-IN';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onstart = () => {
+            const selectedLangCode = recognition.lang;
+            let listeningText = "ਸੁਣ ਰਿਹਾ ਹਾਂ...";
+            // ... (keep all language options for listeningText as before) ...
+             if (selectedLangCode === 'en-US') listeningText = 'Listening...';
+             else if (selectedLangCode === 'en-GB') listeningText = 'Listening...';
+             else if (selectedLangCode === 'hi-IN') listeningText = 'सुन रहा हूँ...';
+             else if (selectedLangCode === 'pa-IN') listeningText = 'ਸੁਣ ਰਿਹਾ ਹਾਂ...';
+             else if (selectedLangCode === 'es-ES') listeningText = 'Escuchando...';
+             else if (selectedLangCode === 'fr-FR') listeningText = 'Écoute...';
+            statusDiv.textContent = listeningText;
+            statusDiv.classList.remove('text-danger');
+            if (currentMicButton) currentMicButton.classList.add('recording');
+        };
+
+        recognition.onresult = (event) => {
+            const speechResult = event.results[0][0].transcript;
+            if (targetInput) {
+                targetInput.value = speechResult;
+                targetInput.dispatchEvent(new Event('change')); // Trigger change event
+            }
+            let recognizedText = `Recognized: "${speechResult}"`;
+             // ... (keep all language options for recognizedText as before) ...
+             if (recognition.lang === 'pa-IN') recognizedText = `ਪਛਾਣਿਆ ਗਿਆ: "${speechResult}"`;
+             else if (recognition.lang === 'hi-IN') recognizedText = `पहचाना गया: "${speechResult}"`;
+             else if (recognition.lang === 'es-ES') recognizedText = `Reconocido: "${speechResult}"`;
+             else if (recognition.lang === 'fr-FR') recognizedText = `Reconnu : "${speechResult}"`;
+            statusDiv.textContent = recognizedText;
+        };
+
+        recognition.onspeechend = () => {
+             try { recognition.stop(); } catch(e) {} // Ensure stop is called
+        };
+
+        recognition.onend = () => {
+            if (currentMicButton) currentMicButton.classList.remove('recording');
+            targetInput = null;
+            currentMicButton = null;
+            // Optionally clear status after a delay
+            // setTimeout(() => { if (statusDiv.textContent.startsWith("Recognized:") || statusDiv.textContent.startsWith("ਪਛਾਣਿਆ ਗਿਆ:")) statusDiv.textContent = ''; }, 3000);
+        };
+
+        recognition.onerror = (event) => {
+            let errorMsg = `Speech recognition error: ${event.error}`;
+             // ... (keep all language options for error messages as before) ...
+             if (recognition.lang === 'pa-IN') {
+                 errorMsg = `ਸਪੀਚ ਰਿਕੋਗਨੀਸ਼ਨ ਵਿੱਚ ਗਲਤੀ: ${event.error}`;
+                 if (event.error === 'no-speech') errorMsg = "ਕੋਈ ਭਾਸ਼ਣ ਨਹੀਂ ਸੁਣਿਆ ਗਿਆ।";
+                 else if (event.error === 'audio-capture') errorMsg = "ਮਾਈਕ੍ਰੋਫੋਨ ਦੀ ਸਮੱਸਿਆ।";
+                 else if (event.error === 'not-allowed') errorMsg = "ਮਾਈਕ੍ਰੋਫੋਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ।";
+                 else if (event.error === 'network') errorMsg = "ਨੈੱਟਵਰਕ ਗਲਤੀ।";
+                 else if (event.error === 'aborted') errorMsg = "ਰੱਦ ਕੀਤਾ ਗਿਆ।";
+             } else if (recognition.lang === 'hi-IN') { /* Hindi Errors */ }
+             else if (recognition.lang === 'es-ES') { /* Spanish Errors */ }
+             else if (recognition.lang === 'fr-FR') { /* French Errors */ }
+             else { /* Default English Errors */
+                 if (event.error === 'no-speech') errorMsg = "No speech detected.";
+                 else if (event.error === 'audio-capture') errorMsg = "Microphone problem.";
+                 else if (event.error === 'not-allowed') errorMsg = "Microphone permission denied.";
+                 else if (event.error === 'network') errorMsg = "Network error.";
+                 else if (event.error === 'aborted') errorMsg = "Aborted.";
+             }
+            statusDiv.textContent = errorMsg;
+            statusDiv.classList.add('text-danger'); // Make errors red
+            if (currentMicButton) currentMicButton.classList.remove('recording');
+            targetInput = null;
+            currentMicButton = null;
+        };
+    }
+
+    initializeRecognition();
+    langSelect.addEventListener('change', initializeRecognition);
+
+    micButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            if (recognition && currentMicButton) { // Check if *any* mic is active
+                 try { recognition.stop(); } catch(e) {}
+            }
+
+            const targetId = button.getAttribute('data-target');
+            targetInput = document.getElementById(targetId);
+            currentMicButton = button;
+
+            if (targetInput) {
+                // Ensure recognition instance is fresh with current language if needed
+                if(recognition.lang !== langSelect.value) {
+                    initializeRecognition();
+                }
+                try {
+                    recognition.start();
+                } catch (e) {
+                    let errorStartMsg = `Could not start recognition: ${e.message}`;
+                    // ... (translate errorStartMsg based on lang) ...
+                    statusDiv.textContent = errorStartMsg;
+                    statusDiv.classList.add('text-danger');
+                    if (currentMicButton) currentMicButton.classList.remove('recording');
+                    targetInput = null;
+                    currentMicButton = null;
+                }
+            } else {
+                console.error(`Could not find target input with ID: ${targetId}`);
+                statusDiv.textContent = "Error: Associated input field not found.";
+                 statusDiv.classList.add('text-danger');
+            }
+        });
+    });
+
+    // --- Language Translation Script ---
+    const translations = {
+         'pa-IN': {
+            'reportMissingPersonTitle': 'ਗੁੰਮ ਹੋਏ ਵਿਅਕਤੀ ਦੀ ਰਿਪੋਰਟ ਕਰੋ',
+            'recognitionLanguage': 'ਰਿਕੋਗਨੀਸ਼ਨ ਭਾਸ਼ਾ:',
+            'name': 'ਨਾਮ:',
+            'age': 'ਉਮਰ:',
+            'lastSeenLocation': 'ਆਖਰੀ ਵਾਰ ਦੇਖਿਆ ਗਿਆ ਸਥਾਨ:',
+            'emailAddress': 'ਤੁਹਾਡਾ ਈਮੇਲ ਪਤਾ (ਅੱਪਡੇਟ ਲਈ):', // Updated Label
+            'phoneNumber': 'ਤੁਹਾਡਾ ਫੋਨ ਨੰਬਰ (ਅੱਪਡੇਟ ਲਈ):', // Updated Label
+            'uploadPhoto': 'ਗੁੰਮ ਹੋਏ ਵਿਅਕਤੀ ਦੀ ਫੋਟੋ ਅੱਪਲੋਡ ਕਰੋ:', // Updated Label
+            'submitReport': 'ਰਿਪੋਰਟ ਜਮ੍ਹਾਂ ਕਰੋ',
+            'additionalInformation': 'ਹੋਰ ਜਾਣਕਾਰੀ (ਆਡੀਓ ਰਿਕਾਰਡ ਕਰੋ):', // Updated Label
+            'additionalInformationPlaceholder': 'ਵੇਰਵੇ ਰਿਕਾਰਡ ਕਰੋ (ਕੱਪੜੇ, ਆਦਿ)' // Updated Placeholder
+        },
+        'en-US': {
+            'reportMissingPersonTitle': 'Report a Missing Person',
+            'recognitionLanguage': 'Recognition Language:',
+            'name': 'Name:',
+            'age': 'Age:',
+            'lastSeenLocation': 'Last Seen Location:',
+            'emailAddress': 'Your Email Address (for updates):',
+            'phoneNumber': 'Your Phone Number (for updates):',
+            'uploadPhoto': 'Upload Photo of Missing Person:',
+            'submitReport': 'Submit Report',
+            'additionalInformation': 'Additional Information (Record Audio):',
+            'additionalInformationPlaceholder': 'Record details (clothing, etc.)'
+        },
+        // ... Add full translations for hi-IN, es-ES, fr-FR as before ...
+        'hi-IN': {
+            'reportMissingPersonTitle': 'गुमशुदा व्यक्ति की रिपोर्ट करें',
+            'recognitionLanguage': 'पहचान भाषा:',
+            'name': 'नाम:',
+            'age': 'उम्र:',
+            'lastSeenLocation': 'पिछली बार देखा गया स्थान:',
+            'emailAddress': 'ईमेल पता:',
+            'phoneNumber': 'फ़ोन नंबर:',
+            'uploadPhoto': 'फोटो अपलोड करें:',
+            'submitReport': 'रिपोर्ट जमा करें',
+            'additionalInformation': 'अतिरिक्त जानकारी (ऑडियो):',
+            'additionalInformationPlaceholder': 'गुमशुदा व्यक्ति के बारे में अतिरिक्त विवरण रिकॉर्ड करें'},
+         'es-ES': {'reportMissingPersonTitle': 'Reportar una Persona Desaparecida',
+            'recognitionLanguage': 'Idioma de Reconocimiento:',
+            'name': 'Nombre:',
+            'age': 'Edad:',
+            'lastSeenLocation': 'Última ubicación vista:',
+            'emailAddress': 'Dirección de correo electrónico:',
+            'phoneNumber': 'Número de teléfono:',
+            'uploadPhoto': 'Subir Foto:',
+            'submitReport': 'Enviar Reporte',
+            'additionalInformation': 'Información Adicional (Audio):',
+            'additionalInformationPlaceholder': 'Grabar detalles adicionales sobre la persona desaparecida'},
+         'fr-FR': {  'reportMissingPersonTitle': 'Signaler une Personne Disparue',
+            'recognitionLanguage': 'Langue de Reconnaissance:',
+            'name': 'Nom:',
+            'age': 'Âge:',
+            'lastSeenLocation': 'Dernier lieu vu:',
+            'emailAddress': 'Adresse e-mail:',
+            'phoneNumber': 'Numéro de téléphone:',
+            'uploadPhoto': 'Télécharger une Photo:',
+            'submitReport': 'Soumettre le Rapport',
+            'additionalInformation': 'Informations Supplémentaires (Audio) :',
+            'additionalInformationPlaceholder': 'Enregistrer des détails supplémentaires sur la personne disparue'}
+    };
+
+     // Ensure all languages are defined before using them
+    function safeGetTranslation(langCode, key, fallback = '') {
+        return translations[langCode]?.[key] ?? translations['en-US']?.[key] ?? fallback;
+    }
+
+
+    const additionalInfoDisplay = document.getElementById('additional-info-display');
+
+    function translatePage(langCode) {
+        document.querySelectorAll('[data-translate]').forEach(element => {
+            const key = element.getAttribute('data-translate');
+            element.textContent = safeGetTranslation(langCode, key, element.textContent);
+        });
+
+        // Handle placeholder specifically
+        if (additionalInfoDisplay) {
+            const placeholderKey = 'additionalInformationPlaceholder';
+            additionalInfoDisplay.textContent = safeGetTranslation(langCode, placeholderKey, 'Record details...');
+        }
+
+        document.documentElement.lang = langCode.split('-')[0]; // Set main lang code (e.g., 'pa')
+    }
+
+    langSelect.addEventListener('change', (event) => {
+        const selectedLang = event.target.value;
+        translatePage(selectedLang);
+        // Re-initialize recognition with the new language
+        initializeRecognition();
+    });
+
+    // Initial translation on load
+    translatePage(langSelect.value);
+
+    // --- Audio Recording Functionality ---
+    const recordButton = document.getElementById('record-audio-button');
+    const audioPreview = document.getElementById('additional-info-audio-preview');
+    const audioFileUploader = document.getElementById('additional-info-audio-file');
+    const recordStatusText = recordButton.querySelector('.record-status-text');
+    let mediaRecorder;
+    let audioChunks = [];
+
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
+                mediaRecorder = new MediaRecorder(stream);
+
+                recordButton.addEventListener('click', () => {
+                    if (mediaRecorder.state === 'recording') {
+                        mediaRecorder.stop();
+                        recordButton.classList.remove('recording');
+                        recordButton.title = "Record Additional Information";
+                        if(recordStatusText) recordStatusText.textContent = "Record";
+                    } else {
+                        audioChunks = [];
+                        audioPreview.style.display = 'none'; // Hide previous preview
+                        audioPreview.src = ''; // Clear previous src
+                        mediaRecorder.start();
+                        recordButton.classList.add('recording');
+                         recordButton.title = "Stop Recording";
+                        if(recordStatusText) recordStatusText.textContent = "Stop";
+                         additionalInfoDisplay.textContent = "Recording audio..."; // Feedback
+                    }
+                });
+
+                mediaRecorder.ondataavailable = event => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+
+                mediaRecorder.onstop = () => {
+                    if (audioChunks.length === 0) {
+                        console.log("No audio data recorded.");
+                        additionalInfoDisplay.textContent = safeGetTranslation(langSelect.value, 'additionalInformationPlaceholder', 'Record details...'); // Reset placeholder
+                        return;
+                    }
+
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/mpeg' }); // Or 'audio/webm' etc.
+                    const audioURL = URL.createObjectURL(audioBlob);
+                    audioPreview.src = audioURL;
+                    audioPreview.style.display = 'block';
+
+                    // Update display text
+                    additionalInfoDisplay.textContent = "Audio recorded. Ready to submit.";
+
+                    // Create a File object for the hidden input
+                    const audioFile = new File([audioBlob], `additional_info_${Date.now()}.mp3`, { type: 'audio/mpeg' });
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(audioFile);
+                    audioFileUploader.files = dataTransfer.files;
+                     console.log("Audio file ready for upload:", audioFileUploader.files[0]);
+                };
+            })
+            .catch(err => {
+                console.error('Error accessing microphone:', err);
+                additionalInfoDisplay.textContent = 'Error accessing microphone.';
+                recordButton.disabled = true;
+            });
+    } else {
+        additionalInfoDisplay.textContent = 'Audio recording not supported by browser.';
+        recordButton.disabled = true;
+    }
+});
+
+</script>
+
+</body>
+</html>

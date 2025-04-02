@@ -1,0 +1,341 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.container {
+    margin-top: 50px;
+}
+.audio-player {
+    width: 2px; /* Example: Set the width to 300 pixels */
+    max-width: 100%; /* Keep this to ensure it doesn't exceed the container on smaller screens */
+}
+
+/* static/css/style.css */
+
+/* --- Base Styles & Variables --- */
+:root {
+    --primary-color: #0d6efd; /* Bootstrap primary blue */
+    --secondary-color: #6c757d; /* Bootstrap secondary grey */
+    --light-grey: #f8f9fa;
+    --dark-grey: #343a40;
+    --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    --card-hover-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    --font-family-base: 'Poppins', sans-serif;
+}
+
+body {
+    font-family: var(--font-family-base);
+    line-height: 1.6;
+    display: flex;          /* For sticky footer */
+    flex-direction: column; /* For sticky footer */
+    min-height: 100vh;      /* For sticky footer */
+}
+
+.content-container {
+    flex-grow: 1; /* Allows footer to stick to bottom */
+}
+
+/* --- Background --- */
+.feed-background {
+    /* Subtle Gradient Example */
+    /* background: linear-gradient(135deg, #eef2f3 0%, #dee3e4 100%); */
+
+    /* Subtle Texture Example (ensure image is optimized) */
+     background-color: #f4f7f6; /* Fallback color */
+     /* background-image: url('../images/subtle-background-texture.png'); /* Place texture in static/images */
+     /* background-repeat: repeat; */
+
+     /* Or keep it simple */
+     background-color: var(--light-grey);
+}
+
+/* --- Typography & Headings --- */
+h2.section-title, h3.section-title {
+    color: var(--dark-grey);
+    font-weight: 600;
+    margin-bottom: 1.5rem; /* More space below titles */
+}
+
+/* --- Navbar --- */
+.navbar-brand {
+    font-weight: 600;
+}
+
+/* --- Search Form --- */
+.search-form .form-control {
+    border-end-end-radius: 0;
+    border-start-end-radius: 0;
+}
+.search-form .search-button {
+    border-end-start-radius: 0;
+    border-start-start-radius: 0;
+}
+.search-form .input-group {
+    border-radius: 0.375rem; /* Match Bootstrap's default */
+}
+.search-form .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); /* Match Bootstrap focus */
+}
+
+
+/* --- Missing Person Card --- */
+.missing-person-card {
+    border: none; /* Remove default border, rely on shadow */
+    border-radius: 0.5rem; /* Slightly more rounded */
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    overflow: hidden; /* Ensure image corners match card rounding */
+}
+
+.missing-person-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--card-hover-shadow);
+}
+
+.card-img-custom {
+    height: 250px; /* Fixed height for consistency */
+    object-fit: cover; /* Cover ensures image fills space without distortion */
+    width: 100%;
+}
+
+.missing-person-card .card-body {
+    padding: 1.25rem;
+}
+
+.missing-person-card .card-title {
+    font-weight: 600;
+    color: var(--dark-grey);
+}
+
+.missing-person-card .card-subtitle {
+    font-size: 0.9rem;
+}
+
+.location-info .map-link-btn {
+    display: inline-flex; /* Align icon and text */
+    align-items: center;
+}
+
+/* --- Audio Player --- */
+.audio-player {
+    border-radius: 5px; /* Optional: slightly style default player */
+    max-width: 100%;
+}
+
+/* --- Map Section --- */
+#map {
+    border: 1px solid #dee2e6; /* Subtle border */
+}
+
+/* --- Responsive Adjustments (Example) --- */
+@media (max-width: 767.98px) {
+    .card-img-custom {
+        height: 200px; /* Slightly shorter images on smaller screens */
+    }
+     h2.section-title, h3.section-title {
+        font-size: 1.5rem; /* Adjust title size */
+    }
+}
+
+/* Add these styles to your existing static/css/style.css */
+
+/* --- Font Variables --- */
+:root {
+    /* ... Keep existing variables ... */
+    --font-family-headings: 'Montserrat', sans-serif;
+    --font-family-body: 'Open Sans', sans-serif;
+}
+
+/* --- Body & Global --- */
+body {
+    /* Apply base font */
+    font-family: var(--font-family-body);
+    padding-top: 56px; /* Adjust based on your fixed navbar height */
+}
+
+.home-background {
+    /* Subtle Gradient Background */
+    background: linear-gradient(to bottom right, #e9f7fc, #fdfbfb); /* Light blue to off-white */
+    /* Or use a subtle texture image */
+    /* background-color: #f8f9fa; */
+    /* background-image: url('../images/your-subtle-texture.png'); */
+    /* background-repeat: repeat; */
+}
+
+h1, h2, h3, h4, h5, h6, .navbar-brand, .btn { /* Apply heading font */
+    font-family: var(--font-family-headings);
+}
+
+/* --- Navbar --- */
+.navbar {
+    transition: background-color 0.3s ease;
+}
+.navbar-brand svg { /* Style navbar icon */
+    vertical-align: text-bottom; /* Align icon better with text */
+}
+
+/* --- Hero Section --- */
+.hero-section {
+    /* background: url('../images/hero-background.jpg') no-repeat center center; */ /* Optional: Add a background image */
+    background: linear-gradient(rgba(40, 40, 70, 0.6), rgba(40, 40, 70, 0.8)), url('../images/community-hands.jpg'); /* Example overlay + image */
+    background-size: cover;
+    min-height: 75vh; /* Make hero section take up significant viewport height */
+    padding: 6rem 0; /* Generous padding */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff; /* Ensure text is white for contrast */
+}
+
+.hero-title {
+    font-size: 3rem; /* Larger title */
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.4); /* Subtle text shadow for readability */
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    font-weight: 400; /* Use regular weight from Open Sans */
+    max-width: 600px; /* Limit width for readability */
+    margin-left: auto;
+    margin-right: auto;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+}
+
+.cta-button {
+    font-weight: 600; /* Bold buttons */
+    padding: 0.8rem 1.8rem; /* Larger padding */
+    font-size: 1.1rem;
+    transition: all 0.3s ease; /* Smooth transition */
+    border-radius: 50px; /* Pill shape buttons */
+}
+.cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+.btn-outline-light:hover {
+    color: var(--dark-grey); /* Make text dark on hover for light outline button */
+}
+
+
+
+.feature-item {
+    margin-bottom: 2rem; /* Add space below items on mobile */
+}
+
+.feature-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px; /* Size of the icon background */
+    height: 60px;
+    border-radius: 50%; /* Make it circular */
+    margin-bottom: 1rem;
+}
+
+.feature-icon svg {
+    width: 32px; /* Size of the SVG icon itself */
+    height: 32px;
+}
+
+/* --- Footer --- */
+.footer {
+    font-size: 0.9rem;
+}
+
+
+/* --- Responsive adjustments --- */
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: 60vh;
+        padding: 4rem 0;
+    }
+    .hero-title {
+        font-size: 2.2rem;
+    }
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+    .cta-button {
+        padding: 0.7rem 1.5rem;
+        font-size: 1rem;
+    }
+    body {
+         padding-top: 56px; /* Ensure padding matches collapsed navbar height */
+    }
+}
+
+/* Add these styles to your existing static/css/style.css */
+
+/* --- Background for Result Page --- */
+body.result-background {
+    /* Example: Slightly different gradient or texture */
+    /* background: linear-gradient(to bottom, #eef2f3, #ffffff); */
+    background-color: var(--light-grey); /* Or reuse home/feed background */
+    padding-top: 56px; /* Adjust for fixed navbar */
+}
+
+/* --- Match Result Card Styling --- */
+.match-result-card {
+   max-width: 600px; /* Limit width for better readability */
+   border: none;
+   border-radius: 1rem; /* More prominent rounding */
+   overflow: hidden; /* Keep contents contained */
+}
+
+.match-photo {
+   width: 150px; /* Control photo size */
+   height: 150px;
+   object-fit: cover;
+   margin-left: auto;
+   margin-right: auto;
+   border: 4px solid #ffffff; /* Optional white border around photo */
+}
+
+.match-success-icon {
+   /* Styles for the checkmark container */
+   line-height: 1;
+}
+
+.match-details h4 {
+   font-weight: 700; /* Bold name */
+   color: var(--dark-grey);
+}
+
+.match-details .lead {
+   color: var(--secondary-color);
+}
+
+.notification-info {
+   font-size: 0.95rem;
+   display: inline-flex; /* Align icon and text */
+   align-items: center;
+   background-color: #e7f3fe; /* Lighter blue background for info */
+   border-color: #cfe2ff;
+   color: #052c65;
+}
+
+/* --- Simple Fade-In Animation --- */
+@keyframes fadeInUp {
+   from {
+       opacity: 0;
+       transform: translate3d(0, 30px, 0);
+   }
+   to {
+       opacity: 1;
+       transform: translate3d(0, 0, 0);
+   }
+}
+
+.animated {
+   animation-duration: 0.8s;
+   animation-fill-mode: both;
+}
+
+.fadeInUp {
+   animation-name: fadeInUp;
+}
+
+/* --- Styling for "No Match" Card (if used) --- */
+.card.border-warning { /* Style the no-match card */
+   border-width: 2px !important;
+}

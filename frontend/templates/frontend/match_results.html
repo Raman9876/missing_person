@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Found - Reunification Platform</title>
+
+    <!-- Google Fonts (Reusing from previous examples) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <!-- Your Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <!-- Font Awesome for Icons (Optional, but nice for checkmark) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+</head>
+<body class="result-background"> {# Use a specific or general background class #}
+
+    <header>
+        {# Reuse the same navbar from home.html/feed.html for consistency #}
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top shadow-sm">
+            <div class="container">
+                <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-person-hearts me-2" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M11.5 1.246a.5.5 0 0 1 .5.5v1.112a2.5 2.5 0 1 1-1.67-.934l.3-.531a.5.5 0 1 1 .87.498l-.3.533a2.48 2.48 0 0 1-.011.011Zm.393 2.272a3.48 3.48 0 0 0-.012-.011l-.3-.532a1.5 1.5 0 1 0-.87-.498l.3.531a1.5 1.5 0 0 0 1.67.934ZM8 5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Zm.001-6.44a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0ZM8 6.25a.75.75 0 0 0-1.5 0v2.5H4.25a.75.75 0 0 0 0 1.5H6.5v2.25a.75.75 0 0 0 1.5 0V10.25h2.25a.75.75 0 0 0 0-1.5H8V6.25Z"/>
+                      <path d="M6 13c0 1.105-1.12 2-2.5 2S1 14.105 1 13c0-1.104 1.12-2 2.5-2s2.5.896 2.5 2Zm8-5a.5.5 0 0 1 .5.5v1.765l.142-.047a1.5 1.5 0 0 1 1.636 1.636l-.047.142V13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1.765l-.142.047a1.5 1.5 0 0 1-1.636-1.636l.047-.142V8.5a.5.5 0 0 1 .5-.5h2Z"/>
+                    </svg>
+                    ReuniteHope
+                </a>
+                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                 <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'upload_view' %}">Report Missing</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'feed' %}">View Feed</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container py-5 d-flex align-items-center justify-content-center" style="min-height: calc(100vh - 112px);"> {# Adjust min-height based on navbar+footer height #}
+        {% if matched_person %}
+            {# Success Card - Animates on load #}
+            <div class="card match-result-card shadow-lg text-center animated fadeInUp">
+                <div class="card-body p-lg-5">
+
+                    <div class="match-success-icon text-success mb-3">
+                        <i class="fas fa-check-circle fa-3x"></i> {# Font Awesome Checkmark #}
+                        {# Or use an SVG checkmark here #}
+                    </div>
+
+                    <h2 class="card-title fw-bold mb-3">Potential Match Found!</h2>
+
+                    {% if matched_person.photo %}
+                        <img src="{{ matched_person.photo.url }}" class="img-fluid rounded-circle shadow-sm mb-4 match-photo" alt="Photo of {{ matched_person.name }}" loading="lazy">
+                    {% else %}
+                        {# Fallback if photo URL exists but file is missing, unlikely if match found #}
+                        <img src="{% static 'images/default_missing.png' %}" class="img-fluid rounded-circle shadow-sm mb-4 match-photo" alt="Default placeholder image" loading="lazy">
+                    {% endif %}
+
+                    <div class="match-details mb-4">
+                        <h4 class="mb-1">{{ matched_person.name }}</h4>
+                         {% if matched_person.age %}
+                            <p class="text-muted mb-2">{{ matched_person.age }} years old</p>
+                         {% endif %}
+                        <p class="lead fs-6">Last seen near: <span class="fw-semibold">{{ matched_person.last_seen_location }}</span></p>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="alert alert-info notification-info" role="alert">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle-fill me-2" viewBox="0 0 16 16">
+                          <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                        </svg>
+                        The registered contact (<strong class="text-truncate">{{ matched_person.parent_phone|default:"Guardian" }}</strong>) has been notified via SMS and Email with details.
+                    </div>
+
+                    <a href="{% url 'home' %}" class="btn btn-primary btn-lg mt-4 px-5 rounded-pill">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-house-heart-fill me-1" viewBox="0 0 16 16">
+                         <path d="M7.293 1.5a1 1 0 0 1 1.414 0L11 3.793V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v3.293l2.354 2.353a.5.5 0 0 1-.708.707L8 2.207 1.354 8.853a.5.5 0 1 1-.708-.707L7.293 1.5Z"/>
+                         <path d="m14 9.293-6-6-6 6V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V9.293Zm-6 .14-1.16-.585a.5.5 0 0 0-.48 0L5.5 9.429l.234.468a.5.5 0 1 0 .866-.434L5.734 8.43 8 7.219l2.266 1.21-.866.434a.5.5 0 1 0 .866.434l.234-.468-.84-.42a.5.5 0 0 0-.48 0L8 9.43Z"/>
+                       </svg>
+                       Return Home
+                    </a>
+
+                </div> {# End card-body #}
+            </div> {# End card #}
+
+        {% else %}
+            {# No Match Found Card #}
+             <div class="card text-center shadow-sm border-warning animated fadeInUp" style="max-width: 500px;">
+                <div class="card-body p-lg-4">
+                    <div class="text-warning mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                           <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="card-title fw-semibold mb-3">No Match Found</h3>
+                    <p class="card-text text-muted">We couldn't find a match for the provided image in our current database. Your uploaded information may be used to help future searches if you reported a missing person.</p>
+                    <a href="{% url 'home' %}" class="btn btn-secondary mt-3 px-4">Return Home</a>
+                     <a href="{% url 'upload_view' %}" class="btn btn-outline-primary mt-3 px-4">Report a Missing Person</a>
+                </div>
+            </div>
+        {% endif %}
+    </main>
+
+    {# Reuse the same footer from home.html/feed.html #}
+    <footer class="footer mt-auto py-3 bg-light border-top">
+      <div class="container text-center">
+        <span class="text-muted">© {% now "Y" %} ReuniteHope Platform. All rights reserved.</span>
+      </div>
+    </footer>
+
+    <!-- Bootstrap Bundle JS (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+</body>
+</html>
