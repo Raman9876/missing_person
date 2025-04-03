@@ -163,7 +163,8 @@ def feed_view(request):
     return render(request, 'frontend/feed.html', {
         'missing_persons': missing_persons,
         'query': query,
-        'missing_persons_json': missing_persons_json
+        'missing_persons_json': missing_persons_json,
+        'GOOGLE_API_KEY': settings.GOOGLE_API_KEY,  # Pass API key to template
     })
 def upload(request):
     return render(request, 'upload.html')

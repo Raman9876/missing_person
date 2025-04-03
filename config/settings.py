@@ -13,9 +13,12 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-
+import environ
 
 load_dotenv()  # Load .env variables
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))  # Read .env file
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", default="")
 
 # Optional: Debugging
 print("Twilio SID from settings:", os.getenv("TWILIO_ACCOUNT_SID"))
